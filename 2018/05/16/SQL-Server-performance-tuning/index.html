@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-TW,en,default">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="SQL Server performance tuning.">
+<meta name="keywords" content="SQL Server,Database,Tuning">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL Server performance tuning">
+<meta property="og:url" content="https://blog.gclin.org/2018/05/16/SQL-Server-performance-tuning/index.html">
+<meta property="og:site_name" content="Austin&#39;s notes">
+<meta property="og:description" content="SQL Server performance tuning.">
+<meta property="og:locale" content="zh-TW">
+<meta property="og:updated_time" content="2018-12-19T09:38:37.900Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SQL Server performance tuning">
+<meta name="twitter:description" content="SQL Server performance tuning.">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://blog.gclin.org/2018/05/16/SQL-Server-performance-tuning/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>SQL Server performance tuning | Austin's notes</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-TW">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Austin's notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切換導航欄">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首頁</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>標籤</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分類</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>歸檔</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://blog.gclin.org/2018/05/16/SQL-Server-performance-tuning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Austin">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Austin's notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SQL Server performance tuning
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">發表於</span>
+              
+
+              
+                
+              
+
+              <time title="創建時間：2018-05-16 00:00:00" itemprop="dateCreated datePublished" datetime="2018-05-16T00:00:00+08:00">2018-05-16</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分類於</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/SQL-Server/" itemprop="url" rel="index"><span itemprop="name">SQL Server</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>SQL Server performance tuning.<br><a id="more"></a></p>
+<h2 id="資料庫效能調教-—-DMV-的進階用法"><a href="#資料庫效能調教-—-DMV-的進階用法" class="headerlink" title="資料庫效能調教 — DMV 的進階用法"></a>資料庫效能調教 — DMV 的進階用法</h2><p>Reference: <a href="http://www.qa-knowhow.com/?p=422" target="_blank" rel="noopener">http://www.qa-knowhow.com/?p=422</a></p>
+<h3 id="只有用過一次的快取計畫-cached-plan"><a href="#只有用過一次的快取計畫-cached-plan" class="headerlink" title="只有用過一次的快取計畫 cached plan"></a>只有用過一次的快取計畫 cached plan</h3><p>如果出現大量的 Cached plan 多半只有使用一次的化，那麼可以考慮設定 <code>optimize for ad hoc workloads</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TOP(<span class="number">20</span>) </span><br><span class="line">   [<span class="built_in">text</span>] <span class="keyword">AS</span> [QueryText], </span><br><span class="line">   cp.size_in_bytes</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_exec_cached_plans <span class="keyword">AS</span> cp <span class="keyword">WITH</span> (NOLOCK) <span class="keyword">CROSS</span> <span class="keyword">APPLY</span> sys.dm_exec_sql_text(plan_handle)</span><br><span class="line"><span class="keyword">WHERE</span> cp.cacheobjtype = N<span class="string">'Compiled Plan'</span></span><br><span class="line">   <span class="keyword">AND</span> cp.objtype = N<span class="string">'Adhoc'</span></span><br><span class="line">   <span class="keyword">AND</span> cp.usecounts = <span class="number">1</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> cp.size_in_bytes <span class="keyword">DESC</span> <span class="keyword">OPTION</span> (RECOMPILE);</span><br></pre></td></tr></table></figure>
+<h3 id="最常被執行的-query"><a href="#最常被執行的-query" class="headerlink" title="最常被執行的 query"></a>最常被執行的 query</h3><p>透過了解最常被執行的query，可以進一步針對這些 query 進行效能調教</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">   qs.execution_count, </span><br><span class="line">   qs.total_rows, </span><br><span class="line">   qs.last_rows, </span><br><span class="line">   qs.min_rows, </span><br><span class="line">   qs.max_rows,</span><br><span class="line">   qs.last_elapsed_time, </span><br><span class="line">   qs.min_elapsed_time, </span><br><span class="line">   qs.max_elapsed_time,</span><br><span class="line">   <span class="keyword">SUBSTRING</span>(qt.TEXT,qs.statement_start_offset / <span class="number">2</span> + <span class="number">1</span>,</span><br><span class="line">      (</span><br><span class="line">         <span class="keyword">CASE</span> <span class="keyword">WHEN</span> qs.statement_end_offset = <span class="number">-1</span></span><br><span class="line">         <span class="keyword">THEN</span> <span class="keyword">LEN</span>(<span class="keyword">CONVERT</span>(<span class="keyword">NVARCHAR</span>(<span class="keyword">MAX</span>), qt.TEXT)) * <span class="number">2</span></span><br><span class="line">         <span class="keyword">ELSE</span> qs.statement_end_offset <span class="keyword">END</span> - qs.statement_start_offset</span><br><span class="line">      ) / <span class="number">2</span></span><br><span class="line">   ) <span class="keyword">AS</span> query_text</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_exec_query_stats <span class="keyword">AS</span> qs <span class="keyword">WITH</span> (NOLOCK) <span class="keyword">CROSS</span> <span class="keyword">APPLY</span> sys.dm_exec_sql_text(qs.sql_handle) <span class="keyword">AS</span> qt</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> qs.execution_count <span class="keyword">DESC</span> <span class="keyword">OPTION</span> (RECOMPILE);</span><br></pre></td></tr></table></figure>
+<h3 id="Missing-indexes"><a href="#Missing-indexes" class="headerlink" title="Missing indexes"></a>Missing indexes</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">   user_seeks * avg_total_user_cost * (avg_user_impact * <span class="number">0.01</span>) <span class="keyword">AS</span> [index_advantage],</span><br><span class="line">   migs.last_user_seek, mid.[<span class="keyword">statement</span>] <span class="keyword">AS</span> [Database.Schema.Table],</span><br><span class="line">   mid.equality_columns, mid.inequality_columns, mid.included_columns,</span><br><span class="line">   migs.unique_compiles, migs.user_seeks, migs.avg_total_user_cost,</span><br><span class="line">   migs.avg_user_impact</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_db_missing_index_group_stats <span class="keyword">AS</span> migs <span class="keyword">WITH</span> (NOLOCK)</span><br><span class="line">   <span class="keyword">INNER</span> <span class="keyword">JOIN</span> sys.dm_db_missing_index_groups <span class="keyword">AS</span> mig <span class="keyword">WITH</span> (NOLOCK)</span><br><span class="line">      <span class="keyword">ON</span> migs.group_handle = mig.index_group_handle</span><br><span class="line">   <span class="keyword">INNER</span> <span class="keyword">JOIN</span> sys.dm_db_missing_index_details <span class="keyword">AS</span> <span class="keyword">mid</span> <span class="keyword">WITH</span> (NOLOCK)</span><br><span class="line">      <span class="keyword">ON</span> mig.index_handle = mid.index_handle</span><br><span class="line"><span class="keyword">WHERE</span> mid.database_id = DB_ID() <span class="comment">-- Remove this to see for entire instance</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> index_advantage <span class="keyword">DESC</span> <span class="keyword">OPTION</span> (RECOMPILE);</span><br></pre></td></tr></table></figure>
+<p>last_user_seek: 這個欄位可以告訴我們最近一次使用的 index 的時間。如果時間太久之前，有可能該query 只是臨時一次性的，因此不一定需要建立 index。</p>
+<p>user_seeks + avg_user_impact + avg_total_user_cost: 這幾個欄位可以幫助我們綜合判斷建立該 index 之後所帶來的效益與可能的節省的成本。</p>
+<p>建立之後效能是否有顯著提升，也需要之後一段時間的觀察。同樣的在用相關的 DMV 看看SQL 效能的改變。</p>
+<h3 id="哪些-Index-Table-可以進行壓縮？"><a href="#哪些-Index-Table-可以進行壓縮？" class="headerlink" title="哪些 Index / Table 可以進行壓縮？"></a>哪些 Index / Table 可以進行壓縮？</h3><p>這個問題我們要查詢的是哪些 index /Table <strong>經常在記憶體當中佔用最多</strong>。針對比較大的資料長期存放於 buffer pool 記憶體中的，我們就可以設定壓縮，壓縮功能適用於 Enterprise 版本，資料壓縮後，由於資料在記憶體也是保持壓縮的狀態，因此可以增加每一次 logical reads 的資料量。相對的，會比較耗用 CPU 的資源。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">   OBJECT_NAME(p.[object_id]) <span class="keyword">AS</span> [ObjectName],</span><br><span class="line">   p.index_id, <span class="keyword">COUNT</span>(*)/<span class="number">128</span> <span class="keyword">AS</span> [Buffer <span class="keyword">size</span>(MB)], </span><br><span class="line">   <span class="keyword">COUNT</span>(*) <span class="keyword">AS</span> [BufferCount],</span><br><span class="line">   p.data_compression_desc <span class="keyword">AS</span> [CompressionType]</span><br><span class="line"><span class="keyword">FROM</span> sys.allocation_units <span class="keyword">AS</span> a <span class="keyword">WITH</span> (NOLOCK)</span><br><span class="line">   <span class="keyword">INNER</span> <span class="keyword">JOIN</span> sys.dm_os_buffer_descriptors <span class="keyword">AS</span> b <span class="keyword">WITH</span> (NOLOCK)</span><br><span class="line">      <span class="keyword">ON</span> a.allocation_unit_id = b.allocation_unit_id</span><br><span class="line">   <span class="keyword">INNER</span> <span class="keyword">JOIN</span> sys.partitions <span class="keyword">AS</span> p <span class="keyword">WITH</span> (NOLOCK)</span><br><span class="line">      <span class="keyword">ON</span> a.container_id = p.hobt_id</span><br><span class="line"><span class="keyword">WHERE</span> b.database_id = <span class="keyword">CONVERT</span>(<span class="built_in">int</span>,DB_ID())</span><br><span class="line">  <span class="keyword">AND</span> p.[object_id] &gt; <span class="number">100</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> p.[object_id], p.index_id, p.data_compression_desc</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> [BufferCount] <span class="keyword">DESC</span> <span class="keyword">OPTION</span> (RECOMPILE);</span><br></pre></td></tr></table></figure>
+<h2 id="SQL-Server-在等待什麼"><a href="#SQL-Server-在等待什麼" class="headerlink" title="SQL Server 在等待什麼?"></a>SQL Server 在等待什麼?</h2><p><a href="http://www.qa-knowhow.com/?p=308" target="_blank" rel="noopener">http://www.qa-knowhow.com/?p=308</a></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">   wait_type, </span><br><span class="line">   waiting_tasks_count, </span><br><span class="line">   wait_time_ms/<span class="number">1000</span> <span class="keyword">AS</span> wait_time_sec, </span><br><span class="line">   max_wait_time_ms/<span class="number">1000</span> <span class="keyword">AS</span> max_wait_time_sec, </span><br><span class="line">   signal_wait_time_ms/<span class="number">1000</span> <span class="keyword">AS</span> signal_wait_time_sec</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_os_wait_stats </span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> wait_time_ms <span class="keyword">desc</span></span><br></pre></td></tr></table></figure>
+<p>特別介紹幾個欄位：</p>
+<ul>
+<li>[wait_time_ms] =  CPU等待時間 + 其他資源(Disk/memory)等待時間</li>
+<li>[signal_wait_time_ms] = CPU 等待時間<br>換句話說，</li>
+</ul>
+<p>其他資源等待時間  = [wait_time_ms] – [signal_wait_time_ms]</p>
+<h3 id="SQL-Server-定義的WaitType-有哪幾種呢-這邊介紹幾種較為常見的"><a href="#SQL-Server-定義的WaitType-有哪幾種呢-這邊介紹幾種較為常見的" class="headerlink" title="SQL Server 定義的WaitType 有哪幾種呢? 這邊介紹幾種較為常見的"></a>SQL Server 定義的WaitType 有哪幾種呢? 這邊介紹幾種較為常見的</h3><h4 id="CXPACKET"><a href="#CXPACKET" class="headerlink" title="CXPACKET"></a>CXPACKET</h4><p>CxPacket 表示因為多個CPU進行平行處理時，各個 Thread 同時執行時，整個工作完成其實需要等待到需要時間最常的 thread 完成，才算整個工作完成。</p>
+<p>舉例來說，下面有一個 Table 需要做讀取，有因此 thread 1~4分別讀取一部分，</p>
+<ul>
+<li>Thread 0是負責管理 thread 1~4整體執行狀況。</li>
+<li>Thread 1-3都很快就完成，其中 Thread 4 因為讀取所需的時間比較長，</li>
+</ul>
+<p>因此，當 thread 1~3 工作完成時就會造成一些等待時間，必須等待到 Thread4完成為止，對於Thread 1~3所發生的等待就是 CXPACKET。對於這種的 WaitType 通常是正常的，解決方法不完全需要把 Multiple-thread 執行取消，而是需要輔助看其他 WaitType 的情況，例如是否有 Disk I/O or Table Scan 等情況。</p>
+<p>CxPacket 與 PageIOLatch 一起發聲的話，表示有  Table Scan，造成Table Scan 的原因可能為：</p>
+<ul>
+<li>統計資訊的不正確</li>
+<li>沒有適當的 Index</li>
+<li>錯誤的 Query plan</li>
+</ul>
+<h4 id="SOS-SCHEDULER-YIELD"><a href="#SOS-SCHEDULER-YIELD" class="headerlink" title="SOS_SCHEDULER_YIELD"></a>SOS_SCHEDULER_YIELD</h4><p>這種形式的 wait 主要為等待 CPU 執行，就是之前所說明的 Signal Wait，也間接說明有可能是CPU 的效能瓶頸。</p>
+<h4 id="LCK"><a href="#LCK" class="headerlink" title="LCK_*"></a>LCK_*</h4><p>表示有很多 Lock 發生，Lock 會造成其他的 Query 被block 無法執行，或是需要等待到取得該資源的 lock 之後才能繼續執行。因為可以進一步分析正在執行中的 SQL Query!</p>
+<h4 id="PAGEIOLATCH-IO-COMPLETION-WRITELOG"><a href="#PAGEIOLATCH-IO-COMPLETION-WRITELOG" class="headerlink" title="PAGEIOLATCH_*, IO_COMPLETION, WRITELOG"></a>PAGEIOLATCH_*, IO_COMPLETION, WRITELOG</h4><p>這些都與 Disk I/O 有關，但是真正的原因有可能是因為 query 的設計不良所導致，例如，Table Scan等。</p>
+<h4 id="PAGELATCH"><a href="#PAGELATCH" class="headerlink" title="PAGELATCH_*"></a>PAGELATCH_*</h4><p>這個主要指的是單純記憶體(buffer Cache)內部資源的等待。與 Disk I/O 完全無關。</p>
+<p>最常見的一種例子，例如 TempDB 的存取，Query 時因為 join Table 所造成的 Hash Join or Merge Join 也會讓SQL Server 在 memory/TempDB作運算與處理。</p>
+<p>(註：Loop Join 的運算僅發生於記憶體中)</p>
+<h4 id="LATCH"><a href="#LATCH" class="headerlink" title="LATCH_*"></a>LATCH_*</h4><p>這是短期於記憶體物件間的資料存取的保護與PageLatch 不同的是，這裡的記憶體指的是 internal cache。PageLatch 的記憶體是 Buffer Cache可以配合 sys.dm_os_latch_stats 進一步查詢該 Latch 的原因與類型。</p>
+<h4 id="ASYNC-NETWORK-IO"><a href="#ASYNC-NETWORK-IO" class="headerlink" title="ASYNC_NETWORK_IO"></a>ASYNC_NETWORK_IO</h4><p>這個指的是 Network IO 瓶頸。但是實務上，當這個 network IO 瓶頸發生的時候，必須要查詢是否為 client 端應用程式的關係，因此必須要讓 SQL Server 等待 client 的回覆，所以看到這類的 Wait 時，可以檢查 client 應用程式端是否有問題。</p>
+<h4 id="OLEDB"><a href="#OLEDB" class="headerlink" title="OLEDB"></a>OLEDB</h4><p>使用 OLEDB 回傳資料就會出現這樣的 wait type，最常見的維 DBCC 指令可能有背景程式執行 DBCC 的指令所造成。</p>
+<h2 id="SQL-Server-效能-—-File-I-O"><a href="#SQL-Server-效能-—-File-I-O" class="headerlink" title="SQL Server 效能 — File I/O"></a>SQL Server 效能 — File I/O</h2><p>Reference: <a href="http://www.qa-knowhow.com/?p=189" target="_blank" rel="noopener">http://www.qa-knowhow.com/?p=189</a></p>
+<h3 id="哪一個資料庫存取造成最多-Disk-I-O"><a href="#哪一個資料庫存取造成最多-Disk-I-O" class="headerlink" title="哪一個資料庫存取造成最多 Disk I/O?"></a>哪一個資料庫存取造成最多 Disk I/O?</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">   DB_NAME(vfs.database_id) database_name, </span><br><span class="line">   vfs.database_id,</span><br><span class="line">   vfs.file_id,</span><br><span class="line">   io_stall_read_ms / <span class="keyword">NULLIF</span>(num_of_reads, <span class="number">0</span>) <span class="keyword">AS</span> avg_read_latency,</span><br><span class="line">   io_stall_write_ms / <span class="keyword">NULLIF</span>(num_of_writes, <span class="number">0</span>) <span class="keyword">AS</span> avg_write_latency,</span><br><span class="line">   io_stall / <span class="keyword">NULLIF</span>(num_of_writes+num_of_writes, <span class="number">0</span>) <span class="keyword">AS</span> avg_total_latency,</span><br><span class="line">   num_of_bytes_read / <span class="keyword">NULLIF</span>(num_of_reads, <span class="number">0</span>) <span class="keyword">AS</span> avg_bytes_per_read,</span><br><span class="line">   num_of_bytes_written / <span class="keyword">NULLIF</span>(num_of_writes, <span class="number">0</span>) <span class="keyword">AS</span> avg_bytes_per_write,</span><br><span class="line">   vfs.io_stall,</span><br><span class="line">   vfs.num_of_reads,</span><br><span class="line">   vfs.num_of_bytes_read,</span><br><span class="line">   vfs.io_stall_read_ms,</span><br><span class="line">   vfs.num_of_writes,</span><br><span class="line">   vfs.num_of_bytes_written,</span><br><span class="line">   vfs.io_stall_write_ms,</span><br><span class="line">   size_on_disk_bytes / <span class="number">1024</span> / <span class="number">1024</span> <span class="keyword">AS</span> size_on_disk_mb,</span><br><span class="line">   physical_name</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_io_virtual_file_stats(<span class="literal">NULL</span>, <span class="literal">NULL</span>) vfs</span><br><span class="line">   <span class="keyword">JOIN</span> sys.master_files mf </span><br><span class="line">      <span class="keyword">ON</span> vfs.database_id = mf.database_id <span class="keyword">AND</span> vfs.file_id = mf.file_id</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> avg_total_latency</span><br></pre></td></tr></table></figure>
+<h2 id="記憶體是否被Ad-hoc-Query佔滿呢"><a href="#記憶體是否被Ad-hoc-Query佔滿呢" class="headerlink" title="記憶體是否被Ad-hoc Query佔滿呢?"></a>記憶體是否被Ad-hoc Query佔滿呢?</h2><p>Reference: <a href="http://www.qa-knowhow.com/?p=676" target="_blank" rel="noopener">http://www.qa-knowhow.com/?p=676</a></p>
+<h3 id="這邊介紹兩個方法可以查詢資料庫記憶體中，是否被許多-Ad-hoc-query-占滿"><a href="#這邊介紹兩個方法可以查詢資料庫記憶體中，是否被許多-Ad-hoc-query-占滿" class="headerlink" title="這邊介紹兩個方法可以查詢資料庫記憶體中，是否被許多 Ad-hoc query 占滿?"></a>這邊介紹兩個方法可以查詢資料庫記憶體中，是否被許多 Ad-hoc query 占滿?</h3><ol>
+<li>查看Memory Consumption 報表，在伺服器連線按右鍵<code>Management Studio</code> &gt;<code>Reports</code> &gt; <code>Standard Reports</code> &gt; <code>Memory Consumption</code><br>，如果該<code>CacheStore</code> 的比例特別高，就表示 ad-hoc query 很多。</li>
+<li>執行<code>select * from sys.dm_exec_cached_plans</code>，看看大部分的 query 是否為 ObjectType = Adhoc</li>
+</ol>
+<h3 id="那要如何解決這樣的問題呢"><a href="#那要如何解決這樣的問題呢" class="headerlink" title="那要如何解決這樣的問題呢?"></a>那要如何解決這樣的問題呢?</h3><p>SQL Server 有一個設定 “optimize for ad hoc workloads ” (預設為 disable)，可以將 Ad-hoc query 的記憶體最佳化，在第一次執行的query 僅存放一點點記憶體，只有在第二次執行的 Query才將整個執行計畫儲存於記憶體。</p>
+<p>可以透過下列指令將該設定值啟動：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sp_CONFIGURE '<span class="keyword">show</span> <span class="keyword">advanced</span> options<span class="string">',1</span></span><br><span class="line"><span class="string">RECONFIGURE</span></span><br><span class="line"><span class="string">GO</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">sp_CONFIGURE '</span><span class="keyword">optimize</span> <span class="keyword">for</span> ad hoc workloads<span class="string">',1</span></span><br><span class="line"><span class="string">RECONFIGUR</span></span><br></pre></td></tr></table></figure>
+<h2 id="資料庫資料檔與交易檔的讀取效能"><a href="#資料庫資料檔與交易檔的讀取效能" class="headerlink" title="資料庫資料檔與交易檔的讀取效能"></a>資料庫資料檔與交易檔的讀取效能</h2><p>Reference: <a href="http://www.qa-knowhow.com/?p=934" target="_blank" rel="noopener">http://www.qa-knowhow.com/?p=934</a></p>
+<p>當一筆資料被更新時，資料庫如何對於 database data Files (ndf/mdf)與交易資料（ldf）檔案進行讀取與寫入的過程：</p>
+<ol>
+<li><p>資料更新<br>當資料庫收到 Update 的指令的時候，會開始對於資料從記憶體與磁碟讀取並且更新</p>
+</li>
+<li><p>從磁碟讀取資料<br>SQL 會判斷該讀取的資料是否可以在記憶體中 SQL buffer 取得，如果可以在記憶體中取得，則不需要到磁碟讀取。如果記憶體中沒有所需的資料，則 SQL 就會到磁碟讀取，並且存放到記憶體中 SQL Buffer。資料庫會將更新的資料寫入記憶體，也就是 SQL Buffer，這時候由於資料僅在記憶體中 (SQL Buffer)被更新，尚未寫入磁碟，因此該資料狀態稱為 Dirty Page。</p>
+</li>
+<li><p>Transaction Log (ldf)<br>資料庫會立刻紀錄一筆更新交易紀錄，每一個交易紀錄都會有一個循序的 LSN (Log Sequential Number)，當異常資料庫終止時，交易紀錄可以讓資料庫回復到原本的狀態。當 “Commit”時，資料交易紀錄就會被寫入磁碟。由於交易紀錄的寫入較為頻繁，而寫讀取多半為 Sequential I/O，因此建議，Transaction log 可以存放在與 Database Data file 不同的實體磁碟。</p>
+</li>
+<li><p>將更新資料寫入磁碟<br>更新的資料會被暫時保存在 SQL Buffer 記憶體中，暫時還不會立刻寫入磁碟，一直等到 “CheckPoint”　的時間點，所有更新的資料會整批被寫入磁碟。這整個過程又稱為 Lazy Write 延遲讀寫，對於這樣的磁碟讀寫的動作通常為 Random I/O。為什麼 SQL Server 不立刻寫入資料到磁碟呢？ 因為到磁碟讀取與寫入所耗費的資源與時間遠遠大於記憶體的存取，因此，為了較好的效能，SQL Server 會盡量在記憶體中 SQL Buffer 處理，一直等到 checkPoint 時間點，才會以批次的方式整批將記憶體中 SQL Buffer 修改的資料，整批寫入磁碟檔案 (Ndf/MDF)。</p>
+</li>
+</ol>
+<p>資料庫的效能建議如下：</p>
+<ol>
+<li>建議將 Transaction Log (LDF)與 Database File (Mdf/NDF)實體的磁碟分開存放</li>
+<li>LDF 可以放在磁碟效能較好的硬碟。因為交易紀錄檔的寫入較為頻繁，執行與每一筆交易有關。</li>
+<li>記憶體多多益善。當面臨昂貴的磁碟存儲設備時，增加記憶體是一個可以有效提升資料庫效能的方法。因為這可以讓資料庫許多的資料存取都在記憶體中完成，節省許多 Disk I/O 時間。</li>
+</ol>
+<h2 id="面對資料庫效能DBA-可以檢查的事"><a href="#面對資料庫效能DBA-可以檢查的事" class="headerlink" title="面對資料庫效能DBA 可以檢查的事"></a>面對資料庫效能DBA 可以檢查的事</h2><p><a href="http://www.qa-knowhow.com/?p=914" target="_blank" rel="noopener">http://www.qa-knowhow.com/?p=914</a></p>
+<h3 id="伺服器健康狀況"><a href="#伺服器健康狀況" class="headerlink" title="伺服器健康狀況"></a>伺服器健康狀況</h3><p>特別是網路卡或是磁碟硬體上的問題。如果該資料庫是安裝在虛擬機器上，就必須額外看是否有惡鄰居導致資料庫效能低落。例如：磁碟空間不足或是記憶體不夠也是一個問題。</p>
+<h3 id="Performance-Counters"><a href="#Performance-Counters" class="headerlink" title="Performance Counters"></a>Performance Counters</h3><p>建立一些 Performance Counters 的基準，這樣慢慢才會知道正常與異常的差異。這些 counters 的收集主要對於資料庫伺服器整體的效能資訊有整體的認知，例如：CPU, Memory, SQL Server workload, Disk, Networking 等效能。</p>
+<h3 id="不良的索引會"><a href="#不良的索引會" class="headerlink" title="不良的索引會"></a>不良的索引會</h3><ul>
+<li>導致搜尋沒有效率 =&gt; Table Scan</li>
+<li>導致錯誤的 Execution plan =&gt; 造成過多的磁碟存取 =&gt; Disk I/O</li>
+<li>導致過多的資料存取 =&gt; 過多不必要的資料在記憶體中 =&gt; Memory pressure</li>
+<li>導致 fragmentation 或是額外的 maintenance</li>
+<li>導致 Blocking =&gt; 間接造成資料存取沒有效率與相關的 Locks</li>
+</ul>
+<p>下列SQL 語句可以幫忙找出特定資料庫 (AdventureWorks2012)為例，Index的使用效率。使用效率高與比較佳的的 Index特徵是：</p>
+<ul>
+<li><code>user_seeks</code>, <code>user_scans</code> ==&gt; 值越高越好。Index Seeks 的效率遠大於 Index Scan</li>
+<li><code>user_updates</code> ==&gt; 值越低越好。因為對於 index 欄位，我們希望主要以查詢為主而非經常性的更新資料。</li>
+<li><code>last_user_seek</code>, <code>last_user_scan</code> ==&gt; 離現在的時間越近越好。因為我們不希望該 index 最近一次被用到是去年的事情。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> o.name <span class="keyword">as</span> table_name, i.name <span class="keyword">as</span> index_name, user_seeks, user_scans, user_updates, last_user_seek, last_user_scan,</span><br><span class="line">last_user_update</span><br><span class="line"><span class="keyword">from</span> sys.dm_db_index_usage_stats s</span><br><span class="line"><span class="keyword">inner</span> <span class="keyword">join</span> sys.objects o <span class="keyword">on</span> s.object_id = o.object_id</span><br><span class="line"><span class="keyword">inner</span> <span class="keyword">join</span> sys.indexes i <span class="keyword">on</span> s.index_id = i.index_id <span class="keyword">and</span> i.object_id = s.object_id</span><br><span class="line"><span class="keyword">where</span> s.database_id = DB_ID(<span class="string">'AdventureWorks2012'</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="blocks-or-deadlocks"><a href="#blocks-or-deadlocks" class="headerlink" title="blocks or deadlocks"></a>blocks or deadlocks</h3><p>交易的死結或是blocks都會造成等待與系統變慢的主要原因，這樣的情況發生時，不管系統的配備有多好，CPU、記憶體、磁碟效能多好，資料庫的查詢都會因為 blocks 或是 deadlocks 而進入等待，等待到資源釋放。因此，每一個資料庫交易的回覆時間就會相對變得很長，特別是在多人同時使用、更新、修改資料的時候，比較會有這個現象。這段SQL 語法可以查出，那些 Query blocking 其他的 Query, 那些 Query 被 blocked。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">   Blocking.session_id <span class="keyword">as</span> BlockingSessionId, </span><br><span class="line">   Sess.login_name <span class="keyword">AS</span> BlockingUser, </span><br><span class="line">   BlockingSQL.text <span class="keyword">AS</span> BlockingSQL, </span><br><span class="line">   Waits.wait_type WhyBlocked, </span><br><span class="line">   Blocked.session_id <span class="keyword">AS</span> BlockedSessionId, </span><br><span class="line">   USER_NAME(Blocked.user_id) <span class="keyword">AS</span> BlockedUser, </span><br><span class="line">   BlockedSQL.text <span class="keyword">AS</span> BlockedSQL, </span><br><span class="line">   DB_NAME(Blocked.database_id) <span class="keyword">AS</span> DatabaseName</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_exec_connections <span class="keyword">AS</span> Blocking</span><br><span class="line">   <span class="keyword">INNER</span> <span class="keyword">JOIN</span> sys.dm_exec_requests <span class="keyword">AS</span> Blocked</span><br><span class="line">      <span class="keyword">ON</span> Blocking.session_id = Blocked.blocking_session_id</span><br><span class="line">   <span class="keyword">INNER</span> <span class="keyword">JOIN</span> sys.dm_os_waiting_tasks <span class="keyword">AS</span> Waits</span><br><span class="line">      <span class="keyword">ON</span> Blocked.session_id = Waits.session_id</span><br><span class="line">   <span class="keyword">RIGHT</span> <span class="keyword">OUTER</span> <span class="keyword">JOIN</span> sys.dm_exec_sessions Sess</span><br><span class="line">      <span class="keyword">ON</span> Blocking.session_id = sess.session_id</span><br><span class="line"><span class="keyword">CROSS</span> <span class="keyword">APPLY</span> sys.dm_exec_sql_text(Blocking.most_recent_sql_handle) <span class="keyword">AS</span> BlockingSQL</span><br><span class="line"><span class="keyword">CROSS</span> <span class="keyword">APPLY</span> sys.dm_exec_sql_text(Blocked.sql_handle) <span class="keyword">AS</span> BlockedSQL</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> BlockingSessionId, BlockedSessionId</span><br></pre></td></tr></table></figure>
+<h2 id="Ac-Hoc-Query-與記憶體快取"><a href="#Ac-Hoc-Query-與記憶體快取" class="headerlink" title="Ac-Hoc Query 與記憶體快取"></a>Ac-Hoc Query 與記憶體快取</h2><p><a href="http://www.qa-knowhow.com/?tag=sql-performance&amp;paged=5" target="_blank" rel="noopener">http://www.qa-knowhow.com/?tag=sql-performance&amp;paged=5</a></p>
+<h2 id="資料庫的效能監視器"><a href="#資料庫的效能監視器" class="headerlink" title="資料庫的效能監視器"></a>資料庫的效能監視器</h2><p>Reference: <a href="http://www.qa-knowhow.com/?p=939" target="_blank" rel="noopener">http://www.qa-knowhow.com/?p=939</a><br>Performance Counter: <a href="http://www.tonylin.idv.tw/dokuwiki/doku.php/pc:goodsoftware:perf_monitor" target="_blank" rel="noopener">Performance Monitor - 效能監視器</a>, <a href="http://www.tonylin.idv.tw/dokuwiki/doku.php/pc:goodsoftware:perf_monitor:basic_monitoring" target="_blank" rel="noopener">使用Performance Monitor監控CPU、Memory、Network與Disks</a></p>
+<h2 id="資料庫效能調教-—-資料庫的設定值"><a href="#資料庫效能調教-—-資料庫的設定值" class="headerlink" title="資料庫效能調教 — 資料庫的設定值"></a>資料庫效能調教 — 資料庫的設定值</h2><p><a href="http://www.qa-knowhow.com/?p=404" target="_blank" rel="noopener">http://www.qa-knowhow.com/?p=404</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/SQL-Server/" rel="tag"># SQL Server</a>
+          
+            <a href="/tags/Database/" rel="tag"># Database</a>
+          
+            <a href="/tags/Tuning/" rel="tag"># Tuning</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/31/Using-Let-s-Encrypt-with-nginx-in-Ubuntu/" rel="next" title="Using Let's Encrypt with nginx in Ubuntu">
+                <i class="fa fa-chevron-left"></i> Using Let's Encrypt with nginx in Ubuntu
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/19/How-to-SET-IDENTITY-INSERT-in-Laravel/" rel="prev" title="How to 'SET IDENTITY_INSERT...' in Laravel.">
+                How to 'SET IDENTITY_INSERT...' in Laravel. <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            本站概要
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Austin</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">文章</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分類</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">標籤</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#資料庫效能調教-—-DMV-的進階用法"><span class="nav-number">1.</span> <span class="nav-text">資料庫效能調教 — DMV 的進階用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#只有用過一次的快取計畫-cached-plan"><span class="nav-number">1.1.</span> <span class="nav-text">只有用過一次的快取計畫 cached plan</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最常被執行的-query"><span class="nav-number">1.2.</span> <span class="nav-text">最常被執行的 query</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Missing-indexes"><span class="nav-number">1.3.</span> <span class="nav-text">Missing indexes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#哪些-Index-Table-可以進行壓縮？"><span class="nav-number">1.4.</span> <span class="nav-text">哪些 Index / Table 可以進行壓縮？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL-Server-在等待什麼"><span class="nav-number">2.</span> <span class="nav-text">SQL Server 在等待什麼?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL-Server-定義的WaitType-有哪幾種呢-這邊介紹幾種較為常見的"><span class="nav-number">2.1.</span> <span class="nav-text">SQL Server 定義的WaitType 有哪幾種呢? 這邊介紹幾種較為常見的</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CXPACKET"><span class="nav-number">2.1.1.</span> <span class="nav-text">CXPACKET</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SOS-SCHEDULER-YIELD"><span class="nav-number">2.1.2.</span> <span class="nav-text">SOS_SCHEDULER_YIELD</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LCK"><span class="nav-number">2.1.3.</span> <span class="nav-text">LCK_*</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PAGEIOLATCH-IO-COMPLETION-WRITELOG"><span class="nav-number">2.1.4.</span> <span class="nav-text">PAGEIOLATCH_*, IO_COMPLETION, WRITELOG</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PAGELATCH"><span class="nav-number">2.1.5.</span> <span class="nav-text">PAGELATCH_*</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LATCH"><span class="nav-number">2.1.6.</span> <span class="nav-text">LATCH_*</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ASYNC-NETWORK-IO"><span class="nav-number">2.1.7.</span> <span class="nav-text">ASYNC_NETWORK_IO</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OLEDB"><span class="nav-number">2.1.8.</span> <span class="nav-text">OLEDB</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL-Server-效能-—-File-I-O"><span class="nav-number">3.</span> <span class="nav-text">SQL Server 效能 — File I/O</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#哪一個資料庫存取造成最多-Disk-I-O"><span class="nav-number">3.1.</span> <span class="nav-text">哪一個資料庫存取造成最多 Disk I/O?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#記憶體是否被Ad-hoc-Query佔滿呢"><span class="nav-number">4.</span> <span class="nav-text">記憶體是否被Ad-hoc Query佔滿呢?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#這邊介紹兩個方法可以查詢資料庫記憶體中，是否被許多-Ad-hoc-query-占滿"><span class="nav-number">4.1.</span> <span class="nav-text">這邊介紹兩個方法可以查詢資料庫記憶體中，是否被許多 Ad-hoc query 占滿?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#那要如何解決這樣的問題呢"><span class="nav-number">4.2.</span> <span class="nav-text">那要如何解決這樣的問題呢?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#資料庫資料檔與交易檔的讀取效能"><span class="nav-number">5.</span> <span class="nav-text">資料庫資料檔與交易檔的讀取效能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#面對資料庫效能DBA-可以檢查的事"><span class="nav-number">6.</span> <span class="nav-text">面對資料庫效能DBA 可以檢查的事</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#伺服器健康狀況"><span class="nav-number">6.1.</span> <span class="nav-text">伺服器健康狀況</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Performance-Counters"><span class="nav-number">6.2.</span> <span class="nav-text">Performance Counters</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不良的索引會"><span class="nav-number">6.3.</span> <span class="nav-text">不良的索引會</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#blocks-or-deadlocks"><span class="nav-number">6.4.</span> <span class="nav-text">blocks or deadlocks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ac-Hoc-Query-與記憶體快取"><span class="nav-number">7.</span> <span class="nav-text">Ac-Hoc Query 與記憶體快取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#資料庫的效能監視器"><span class="nav-number">8.</span> <span class="nav-text">資料庫的效能監視器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#資料庫效能調教-—-資料庫的設定值"><span class="nav-number">9.</span> <span class="nav-text">資料庫效能調教 — 資料庫的設定值</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Austin</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 強力驅動</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主題 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

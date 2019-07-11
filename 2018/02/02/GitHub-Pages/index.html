@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-TW,en,default">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="東挑西選搞了很久，最後決定用GitHub Pages + Hexo來架設Blog，所以就順手寫個文章介紹一下這兩個東西吧! GitHub Pages 是由 GitHub 提供的靜態網頁代管服務，只要將網頁 Push 到指定的 Repository 下的 Branch 即可發佈到對應的網址。GitHub Pages 基本上分為兩種類型，User/Organization Pages和Project">
+<meta name="keywords" content="GitHub,GitHub Pages">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub Pages">
+<meta property="og:url" content="https://blog.gclin.org/2018/02/02/GitHub-Pages/index.html">
+<meta property="og:site_name" content="Austin&#39;s notes">
+<meta property="og:description" content="東挑西選搞了很久，最後決定用GitHub Pages + Hexo來架設Blog，所以就順手寫個文章介紹一下這兩個東西吧! GitHub Pages 是由 GitHub 提供的靜態網頁代管服務，只要將網頁 Push 到指定的 Repository 下的 Branch 即可發佈到對應的網址。GitHub Pages 基本上分為兩種類型，User/Organization Pages和Project">
+<meta property="og:locale" content="zh-TW">
+<meta property="og:image" content="https://blog.gclin.org/images/GitHub-Pages/github_pages.png">
+<meta property="og:image" content="https://blog.gclin.org/images/GitHub-Pages/github_pages%20in%20docs.png">
+<meta property="og:image" content="https://blog.gclin.org/images/GitHub-Pages/github_pages%20on%20gh-pages.png">
+<meta property="og:updated_time" content="2018-12-19T09:20:56.277Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GitHub Pages">
+<meta name="twitter:description" content="東挑西選搞了很久，最後決定用GitHub Pages + Hexo來架設Blog，所以就順手寫個文章介紹一下這兩個東西吧! GitHub Pages 是由 GitHub 提供的靜態網頁代管服務，只要將網頁 Push 到指定的 Repository 下的 Branch 即可發佈到對應的網址。GitHub Pages 基本上分為兩種類型，User/Organization Pages和Project">
+<meta name="twitter:image" content="https://blog.gclin.org/images/GitHub-Pages/github_pages.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://blog.gclin.org/2018/02/02/GitHub-Pages/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>GitHub Pages | Austin's notes</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-TW">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Austin's notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切換導航欄">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首頁</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>標籤</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分類</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>歸檔</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://blog.gclin.org/2018/02/02/GitHub-Pages/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Austin">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Austin's notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GitHub Pages
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">發表於</span>
+              
+
+              
+                
+              
+
+              <time title="創建時間：2018-02-02 00:00:00" itemprop="dateCreated datePublished" datetime="2018-02-02T00:00:00+08:00">2018-02-02</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分類於</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GitHub/" itemprop="url" rel="index"><span itemprop="name">GitHub</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>東挑西選搞了很久，最後決定用<strong>GitHub Pages</strong> + <strong>Hexo</strong>來架設Blog，所以就順手寫個文章介紹一下這兩個東西吧!</p>
+<p>GitHub Pages 是由 GitHub 提供的靜態網頁代管服務，只要將網頁 Push 到指定的 Repository 下的 Branch 即可發佈到對應的網址。GitHub Pages 基本上分為兩種類型，<strong>User/Organization Pages</strong>和<strong>Project Pages</strong>，兩者功能是一樣的，只是在使用方式及其對應的網址上有些差異。<a id="more"></a></p>
+<h3 id="User-Organization-Pages"><a href="#User-Organization-Pages" class="headerlink" title="User/Organization Pages"></a>User/Organization Pages</h3><p>建立一個Repository名為<code>&lt;username&gt;.github.io</code>，然後Push網頁到這個Repository的<code>master</code>，成功後即可透過<code>http(s)://&lt;username&gt;.github.io</code>看到網頁了。</p>
+<blockquote>
+<p>若是Organization Pages，<em>username</em>改為<em>orgname</em></p>
+</blockquote>
+<h3 id="Project-Pages"><a href="#Project-Pages" class="headerlink" title="Project Pages"></a>Project Pages</h3><p>存放Project Pages網頁的路徑有三個地方可以選<code>master</code>, <code>master</code>裡的<code>/docs</code>目錄還有名為<code>gh-pages</code>的Branch。其中<code>gh-pages</code>會在建立之後，GitHub Pages 的設定會自動對到這個 Branch，但是如果是要指定到<code>master</code>或是在<code>master</code>裡的<code>/docs</code>目錄，那就要自己去<a href="https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/" target="_blank" rel="noopener">改設定</a>了。設定好存放網頁的路徑後，把網頁Push到指定的路徑，完成後即可透過<code>http(s)://&lt;username&gt;.github.io/&lt;projectname&gt;</code>看到網頁了。</p>
+<h3 id="網址跟檔案位置的對應表"><a href="#網址跟檔案位置的對應表" class="headerlink" title="網址跟檔案位置的對應表"></a>網址跟檔案位置的對應表</h3><table>
+<thead>
+<tr>
+<th>網站類型</th>
+<th>預設網址</th>
+<th>網頁存放的位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User Pages site</td>
+<td><code>username.github.io</code></td>
+<td><code>master</code></td>
+</tr>
+<tr>
+<td>Organization Pages site</td>
+<td><code>orgname.github.io</code></td>
+<td><code>master</code></td>
+</tr>
+<tr>
+<td>User Project Pages</td>
+<td><code>username.github.io/projectname</code></td>
+<td><code>master</code>, <code>gh-pages</code>, 或是在<code>master</code>裡的<code>/docs</code>目錄</td>
+</tr>
+<tr>
+<td>Organization Project Pages</td>
+<td><code>orgname.github.io/projectname</code></td>
+<td><code>master</code>, <code>gh-pages</code>, 或是在<code>master</code>裡的<code>/docs</code>目錄</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Using-a-custom-domain"><a href="#Using-a-custom-domain" class="headerlink" title="Using a custom domain"></a>Using a custom domain</h3><p>直接在Repository的設定裡<a href="https://help.github.com/articles/adding-or-removing-a-custom-domain-for-your-github-pages-site/" target="_blank" rel="noopener">修改</a>，或是在存放網頁的目前裡，新增一個檔案<code>CNAME</code>，然後把你的網域名稱寫在裡面，Push 上去就可以了。</p>
+<p>例如<code>github_pages</code>這個 Repository 底下的<code>gh-pages</code>裡有設定一個<code>CNAME</code>內容是<code>pages.gclin.org</code>，即可以<br><a href="https://gclin.github.io/github_pages" target="_blank" rel="noopener">https://gclin.github.io/github_pages</a> 轉到 <a href="http://pages.gclin.org/" target="_blank" rel="noopener">http://pages.gclin.org/</a> 。</p>
+<blockquote>
+<p>記得要先把 <code>pages.gclin.org</code> 指到 <code>gclin.github.io</code></p>
+</blockquote>
+<h3 id="Creating-a-custom-404-page"><a href="#Creating-a-custom-404-page" class="headerlink" title="Creating a custom 404 page"></a>Creating a custom 404 page</h3><p><a href="https://help.github.com/articles/creating-a-custom-404-page-for-your-github-pages-site/" target="_blank" rel="noopener">Creating a custom 404 page for your GitHub Pages site</a></p>
+<h3 id="使用限制"><a href="#使用限制" class="headerlink" title="使用限制"></a>使用限制</h3><ul>
+<li>GitHub Pages 的 Repository <a href="https://help.github.com/articles/what-is-my-disk-quota/#file-and-repository-size-limitations" target="_blank" rel="noopener">建議保持在1GB以內</a></li>
+<li>發佈的 GitHub Pages 網站不可超過1GB</li>
+<li>每月流量限制100GB</li>
+<li>每小時最多進行10次建置</li>
+</ul>
+<blockquote>
+<p>GitHub 對 Repository 的用量，除了單一檔不可大於100MB(從Browser上傳的話是25MB)之外，並沒有配額限制，只會在用量大於1GB時，GitHub 會寄信提醒。</p>
+</blockquote>
+<h3 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h3><p>這邊用的 Repository 是這個 <a href="https://github.com/gclin/github_pages/" target="_blank" rel="noopener">https://github.com/gclin/github_pages/</a></p>
+<ul>
+<li><a href="https://github.com/gclin/github_pages/tree/master" target="_blank" rel="noopener">master</a><ul>
+<li><a href="https://github.com/gclin/github_pages/blob/master/README.md" target="_blank" rel="noopener">README.md</a></li>
+<li><a href="https://github.com/gclin/github_pages/blob/master/docs/index.md" target="_blank" rel="noopener">docs/index.md</a></li>
+</ul>
+</li>
+<li><a href="https://github.com/gclin/github_pages/tree/gh-pages" target="_blank" rel="noopener">gh-pages</a><ul>
+<li><a href="https://github.com/gclin/github_pages/blob/gh-pages/index.md" target="_blank" rel="noopener">index.md</a></li>
+<li><a href="https://github.com/gclin/github_pages/blob/gh-pages/CNAME" target="_blank" rel="noopener">CNAME</a> - Custom domain</li>
+<li><a href="https://github.com/gclin/github_pages/blob/gh-pages/_config.yml" target="_blank" rel="noopener">_config.yml</a> - 設定了 jekyll-theme</li>
+</ul>
+</li>
+</ul>
+<h4 id="把Source設定為-master-branch"><a href="#把Source設定為-master-branch" class="headerlink" title="把Source設定為 master branch"></a>把Source設定為 <code>master branch</code></h4><p><img src="/images/GitHub-Pages/github_pages.png" alt></p>
+<h4 id="把Source設定為-master-branch-docs-folder"><a href="#把Source設定為-master-branch-docs-folder" class="headerlink" title="把Source設定為 master branch /docs folder"></a>把Source設定為 <code>master branch /docs folder</code></h4><p><img src="/images/GitHub-Pages/github_pages in docs.png" alt></p>
+<h4 id="把-Source-設定為-gh-pages-branch"><a href="#把-Source-設定為-gh-pages-branch" class="headerlink" title="把 Source 設定為 gh-pages branch"></a>把 Source 設定為 <code>gh-pages branch</code></h4><p>目前這個 Project pages 是套用這個設定，可以透過下面這兩個網址查看</p>
+<ul>
+<li><a href="http://pages.gclin.org/" target="_blank" rel="noopener">http://pages.gclin.org/</a></li>
+<li><a href="https://gclin.github.io/github_pages/" target="_blank" rel="noopener">https://gclin.github.io/github_pages/</a></li>
+</ul>
+<p><img src="/images/GitHub-Pages/github_pages on gh-pages.png" alt></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/GitHub/" rel="tag"># GitHub</a>
+          
+            <a href="/tags/GitHub-Pages/" rel="tag"># GitHub Pages</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/13/Hexo/" rel="next" title="Hexo">
+                <i class="fa fa-chevron-left"></i> Hexo
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/31/Using-Let-s-Encrypt-with-nginx-in-Ubuntu/" rel="prev" title="Using Let's Encrypt with nginx in Ubuntu">
+                Using Let's Encrypt with nginx in Ubuntu <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            本站概要
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Austin</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">文章</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分類</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">標籤</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#User-Organization-Pages"><span class="nav-number">1.</span> <span class="nav-text">User/Organization Pages</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Project-Pages"><span class="nav-number">2.</span> <span class="nav-text">Project Pages</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#網址跟檔案位置的對應表"><span class="nav-number">3.</span> <span class="nav-text">網址跟檔案位置的對應表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-a-custom-domain"><span class="nav-number">4.</span> <span class="nav-text">Using a custom domain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-a-custom-404-page"><span class="nav-number">5.</span> <span class="nav-text">Creating a custom 404 page</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用限制"><span class="nav-number">6.</span> <span class="nav-text">使用限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Demo"><span class="nav-number">7.</span> <span class="nav-text">Demo</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#把Source設定為-master-branch"><span class="nav-number">7.1.</span> <span class="nav-text">把Source設定為 master branch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#把Source設定為-master-branch-docs-folder"><span class="nav-number">7.2.</span> <span class="nav-text">把Source設定為 master branch /docs folder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#把-Source-設定為-gh-pages-branch"><span class="nav-number">7.3.</span> <span class="nav-text">把 Source 設定為 gh-pages branch</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Austin</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 強力驅動</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主題 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
